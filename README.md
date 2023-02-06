@@ -194,7 +194,7 @@ issueを選択したら実際に問題となっている事象を再現させて
 - バグ修正から手をつける
   - バグ修正は比較的部分的なコード修正で完結できる可能性が高い
   - issueはバグ報告以外のものもあるため`kind/bug`といったラベルを参考にすると良い
-- 再現手順やあるべき姿が明確に示されているものを選ぶ
+- 再現手順やあるべき姿が明確に示されている(もしくは読み取れる)ものを選ぶ
   - (例1: kubelet)[Pod terminating stuck because of trying to umount not actual mounted dir](https://github.com/kubernetes/kubernetes/issues/114546)
   - (例2: HNC)[Unable to delete Subnamespaceanchor with long name](https://github.com/kubernetes-sigs/hierarchical-namespaces/issues/230)
 
