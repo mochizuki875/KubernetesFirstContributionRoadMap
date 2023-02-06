@@ -3,8 +3,8 @@
 Kubernetesおよび関連プロジェクトに対してContributionを開始できること。
 
 ## 習得すべきスキル
-- Kubernetes関連コードを読んでどのような処理が行われているかを理解できる
-- あるべき状態にコードを修正できる
+- Kubernetesおよび関連プロジェクトのコードを読んでどのような処理が行われているかを理解できる
+- あるべき状態にプロジェクトのコードを修正できる
 
 ## 対象者
 Kubernetesの基本的な動作やコンポーネントを理解しており、Kubernetesおよび関連プロジェクトにコードベースのPRを出してみたい人。
@@ -12,10 +12,10 @@ Kubernetesの基本的な動作やコンポーネントを理解しており、K
 #### 目安
 - Kubernetesのコンポーネントおよび役割の概要を説明できる
   - [Kubernetes Components](https://kubernetes.io/docs/concepts/overview/components/)
-- `Reconcile`とは何か概要を説明できる
+- `Reconcile Loop`とは何か概要を説明できる
   - [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/)
 
-## 事前準備
+## コードエディタの準備
 使用するエディタは好みで良いが、特にコードリーディングをする上でコード内で使用されている関数やメソッド、構造体定義を参照したくなる場面が多いため`VSCode`などコードジャンプを利用できるものを強く推奨。  
 
 - [vscode-go/code-navigation](https://github.com/golang/vscode-go/wiki/features#code-navigation)
@@ -47,19 +47,20 @@ Kubernetes関連プロジェクトではUnitテストにGo標準の`testing`パ�
 基礎学習として`Controller`に関するコードリーディングや実装を経験することで、Kubernetesのコアとなる`Reconcile`や、`kube-apiserver`に対するCRUDの仕組みを習得する。  
 この知識は`Controller`に限らず様々なKubernetesコンポーネントの実装理解に活用できるものなのでこのステップで押さえておくと良い。
 
-#### Controllerとは  
-[Controller](https://kubernetes.io/docs/concepts/architecture/controller/)とは、管理対象とするなんらかのリソースの状態を、Kubernetesリソースとして定義したあるべき状態に維持する(`Reconcile`)コンポーネント。  
-代表的な例としてKubernetes上で`ReplicaSet`を用いて複数`Pod`を管理する例が挙げられる。
-
-![](./img/img-1.png)
-
 特に`2.1`、`2.2`および`2.4`については以下書籍に沿って行うのがスムーズ。  
 必要な知識を体系的かつ効率的に習得ことができるのを踏まえれば2,000円という価格は安い。  
 - [実践入門 Kubernetesカスタムコントローラーへの道](https://nextpublishing.jp/book/11389.html)
 
+#### Controllerとは  
+[Controller](https://kubernetes.io/docs/concepts/architecture/controller/)とは、管理対象とするなんらかのリソースの状態を、Kubernetesリソースとして定義したあるべき状態に維持する(=`Reconcile Loop`を実現する)コンポーネント。  
+
+代表的な例としてKubernetes上で`ReplicaSet`を用いて複数`Pod`を管理する例が挙げられる。(`kube-controller-manager`に含まれる`ReplicaSetController`により実現)
+
+![](./img/img-1.png)
+
 ### 2.1. sample-controllerのコードリーディング
-`sample-controller`(`Controller`のリファレンス実装)のコードリーディングを通じて[client-go](https://pkg.go.dev/k8s.io/client-go/kubernetes)と呼ばれるパッケージを用いたプリミティブな`Controller`の実装方式を理解する。  
-特に`Clientset`,`Informer`,`EventHandler`,`Queue`と言った重要コンポーネントの使い方や、それらを用いた`Reconcile`の実現方式に関する知識を習得するのがこのステップでの主な目的。
+`sample-controller`(`Controller`のリファレンス実装)のコードリーディングを通じて[client-go](https://pkg.go.dev/k8s.io/client-go/kubernetes)と呼ばれるパッケージを用いたプリミティブな`Controller`の実装方式を理解する。    
+特にここで登場する`Clientset`,`Informer`,`EventHandler`,`Queue`と言ったコンポーネントは実際のKubernetesのコアコンポーネントの実装でも用いられる重要コンポーネントであるため、利用方法やそれらを用いた`Reconcile`の実現方式に関する知識をこのステップで押さえておくと良い。
 
 - [kubernetes/sample-controller](https://github.com/kubernetes/sample-controller)
 
@@ -77,7 +78,7 @@ Kubernetes関連プロジェクトではUnitテストにGo標準の`testing`パ�
 ### 2.2. KubebuilderによるControllerの実装
 `Kubebuilder`(SDK)による`Controller`の実装を経験することで、[Controller-Runtime](https://pkg.go.dev/sigs.k8s.io/controller-runtime)と呼ばれるライブラリを用いた`Controller`の実装方式を理解する。  
 特に`Controller-Runtime`では`client-go`を用いるケースと比較して`Reconcile`を実現するための低レイヤのロジックが抽象化されているため違いを意識しながら進めると良い。  
-`kubernetes-sigs`や`3rd-Party`として提供される`Controller`は`Controller-Runtime`を用いて実装されているケースが多いためここで使い方を理解しておくと良い。
+また、`kubernetes-sigs`や`3rd-Party`として提供される`Controller`は`Controller-Runtime`を用いて実装されているケースが多いため、ここで使い方を理解しておくと実際のコードリーディングにおいて役立つ。
 
 書籍を用意できるようであれば[実践入門 Kubernetesカスタムコントローラーへの道](https://nextpublishing.jp/book/11389.html)の4、5章に沿って進めるのが理想的だが、用意が難しい場合は参考に挙げたサイトを参考に、シンプルで良いのでなんらかの機能を持った`Controller`を実装する。
 
@@ -101,7 +102,19 @@ Contributionを行う際にはソースコード本体に加えテストコー�
 - [コントローラーのテスト](https://zoetrope.github.io/kubebuilder-training/controller-runtime/controller_test.html)
 - [Ginkgo/GomegaによるKubernetes Operatorのテスト手法](https://zenn.dev/zoetro/books/testing-kubernetes-operator)
 
-### 2.4. (Advanced)Webhookの実装
+### 2.4. (Advanced)Controller-Runtimeのコードリーディング
+`Controller-Runtime`では`client-go`を用いる場合と比較して低レイヤのロジックが抽象化されるため、抽象化された部分が具体的にどのように実装されているかをコードリーディングから理解する。  
+例として`kubebuilder`で初期化したプロジェクトの`Reconcile`メソッドがどのような流れで呼び出されるかを追ってみると良い。  
+`Controller-Runtime`に関する理解が深まるのに加えコードリーディング自体にも慣れることができるため、`Controller-Runtime`の利用方法を理解したこの時点で実施することを強く推奨。
+
+最終的に以下のようなイメージで`Controller`が起動し`Reconcile`が動作するところまで理解できれば良い。  
+
+![](./img/img-4.png)
+
+#### [参考]
+- [controller-runtime Deep Dive](https://speakerdeck.com/bells17/controller-runtime-deep-dive)
+
+### 2.5. (Advanced)Webhookの実装
 `kubernetes-sigs`や`3rd-Party`として提供される`Controller`では`Webhook`の機能が合わせて提供されることが多いため、`2.2`で作成したコントローラーに対して`Webhook`を実装し、実装方法を理解しておくと良い。  
 ※必要になったタイミングで補完するでも良い。
 
@@ -110,17 +123,7 @@ Contributionを行う際にはソースコード本体に加えテストコー�
 - [Webhookの実装](https://zoetrope.github.io/kubebuilder-training/controller-runtime/webhook.html)
 - [Implementing defaulting/validating webhooks](https://book.kubebuilder.io/cronjob-tutorial/webhook-implementation.html)
 
-### 2.5. (Advanced)Controller-Runtimeのコードリーディング
-`Controller-Runtime`では`client-go`を用いる場合と比較して低レイヤのロジックが抽象化されるため、抽象化された部分が具体的にどのように実装されているかをコードリーディングから理解する。  
-例として`kubebuilder`で初期化したプロジェクトの`Reconcile`メソッドがどのような流れで呼び出されるかを追ってみると良い。  
-このステップは必須ではないが、`Controller-Runtime`に関する理解が深まるのに加えコードリーディング自体にも慣れることができるので実施することを推奨。
 
-最終的に以下のようなイメージで`Controller`が起動し`Reconcile`が動作するところまで理解できれば良い。  
-
-![](./img/img-4.png)
-
-#### [参考]
-- [controller-runtime Deep Dive](https://speakerdeck.com/bells17/controller-runtime-deep-dive)
 
 
 ## 3. Contributionの開始
