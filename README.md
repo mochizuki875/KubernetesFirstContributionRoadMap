@@ -1,4 +1,8 @@
 # Kubernetes First Contribution Road Map
+## はじめに
+本ドキュメントではKubernetesやその関連プロジェクトに対してContributionを開始したい人向けに、それに向けてどのような流れを踏んで行けば良いかを自身の経験ベースで記載している。  
+ここに記載している内容が必ずしも正解という訳ではないため、必要に応じて実施内容は取捨選択すること。
+
 ## ゴール
 Kubernetesおよび関連プロジェクトに対してContributionを開始できること。
 
